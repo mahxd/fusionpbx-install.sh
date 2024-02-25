@@ -125,6 +125,9 @@ cd /var/www/fusionpbx && /usr/bin/php /var/www/fusionpbx/core/upgrade/upgrade.ph
 rm -rf /etc/freeswitch/sip_profiles/*ipv6*
 rm -rf /var/lib/freeswitch/db/*ipv6*
 cd /etc/freeswitch/languages && rm -r `ls | grep -v 'ar\|en'`
+
+echo 'error_log = /proc/self/fd/2' >> /etc/php/8.1/php.ini
+echo 'access.log = /proc/self/fd/2' >> /etc/php/8.1/php.ini
  
 rsync -ago /etc/freeswitch/ /etc/freeswitch-init/
 rsync -ago /etc/fusionpbx/ /etc/fusionpbx-init/

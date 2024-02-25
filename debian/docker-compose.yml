@@ -3,9 +3,9 @@ services:
   postgresql:
     image: postgres:16
     restart: always
-    ports:
-      - 5432:5432
-    # network_mode: host
+    # ports:
+    #   - 5432:5432
+    network_mode: host
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: passwdcuN2NCbG
@@ -13,6 +13,7 @@ services:
       # - ./data/postgresql:/var/lib/postgresql/data
       - pg-data:/var/lib/postgresql/data
       - ./resources/postgresql/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/localtime:/etc/localtime
 
   pgadmin:
     image: dpage/pgadmin4
@@ -25,9 +26,9 @@ services:
       # - ./data/pgadmin_data:/var/lib/pgadmin
       - pgadmin-data:/var/lib/pgadmin
       - /etc/localtime:/etc/localtime
-    ports:
-      - 8800:8800
-    # network_mode: host
+    # ports:
+    #   - 8800:8800
+    network_mode: host
 
   nettools:
     image: jonlabelle/network-tools
@@ -35,7 +36,7 @@ services:
       - tail
       - -f
       - /dev/null
-    # network_mode: host
+    network_mode: host
 
   fusionpbx:
     build: 
@@ -43,11 +44,11 @@ services:
       dockerfile: ./docker/Dockerfile
       network: host
     image: fusionpbx:1
-    ports:
-      - 8805:443
-    # network_mode: host
-    # extra_hosts:
-    #   - "postgresql:127.0.0.1"
+    # ports:
+    #   - 8805:443
+    network_mode: host
+    extra_hosts:
+      - "postgresql:127.0.0.1"
     volumes:
       - "./data/etc-freeswitch:/etc/freeswitch"
       - "./data/etc-fusionpbx:/etc/fusionpbx"
