@@ -67,9 +67,9 @@ services:
     image: fusionpbx:1
     profiles:
       - init
-    # network_mode: host
-    # extra_hosts:
-    #   - "postgresql:127.0.0.1"
+    network_mode: host
+    extra_hosts:
+      - "postgresql:127.0.0.1"
     volumes:
       - "./data/etc-freeswitch:/etc/freeswitch-init"
       - "./data/etc-fusionpbx:/etc/fusionpbx-init"
@@ -78,7 +78,7 @@ services:
       - "./data/var-www-fusionpbx:/var/www/fusionpbx-init"
       - "./data/etc-php-8.1:/etc/php/8.1-init"
       - "./docker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
-      - "./resources/finish.sh:/usr/src/fusionpbx-install.sh/debian/resources/finish.sh"
+      - "./resources:/usr/src/fusionpbx-install.sh/debian/resources:ro"
       - /etc/localtime:/etc/localtime
     entrypoint:
       - /usr/src/fusionpbx-install.sh/debian/resources/finish.sh
