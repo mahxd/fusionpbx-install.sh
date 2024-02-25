@@ -155,29 +155,29 @@ if [ .$cpu_architecture = .'x86' ]; then
 	. ./ioncube.sh
 fi
 
-#restart php-fpm
-systemctl daemon-reload
-if [ ."$php_version" = ."5.6" ]; then
-        systemctl restart php5-fpm
-fi
-if [ ."$php_version" = ."7.0" ]; then
-        systemctl restart php7.0-fpm
-fi
-if [ ."$php_version" = ."7.1" ]; then
-        systemctl restart php7.1-fpm
-fi
-if [ ."$php_version" = ."7.2" ]; then
-        systemctl restart php7.2-fpm
-fi
-if [ ."$php_version" = ."7.3" ]; then
-        systemctl restart php7.3-fpm
-fi
-if [ ."$php_version" = ."7.4" ]; then
-        systemctl restart php7.4-fpm
-fi
-if [ ."$php_version" = ."8.1" ]; then
-        systemctl restart php8.1-fpm
-fi
+#M#restart php-fpm
+# systemctl daemon-reload
+# if [ ."$php_version" = ."5.6" ]; then
+#         systemctl restart php5-fpm
+# fi
+# if [ ."$php_version" = ."7.0" ]; then
+#         systemctl restart php7.0-fpm
+# fi
+# if [ ."$php_version" = ."7.1" ]; then
+#         systemctl restart php7.1-fpm
+# fi
+# if [ ."$php_version" = ."7.2" ]; then
+#         systemctl restart php7.2-fpm
+# fi
+# if [ ."$php_version" = ."7.3" ]; then
+#         systemctl restart php7.3-fpm
+# fi
+# if [ ."$php_version" = ."7.4" ]; then
+#         systemctl restart php7.4-fpm
+# fi
+# if [ ."$php_version" = ."8.1" ]; then
+#         systemctl restart php8.1-fpm
+# fi
 
 #init.d
 #/usr/sbin/service php5-fpm restart

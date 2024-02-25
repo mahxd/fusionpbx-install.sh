@@ -1,0 +1,8 @@
+SET client_encoding = 'UTF8';
+CREATE DATABASE fusionpbx;
+CREATE DATABASE freeswitch;
+CREATE ROLE fusionpbx WITH SUPERUSER LOGIN PASSWORD 'fpasswdxH7CV71AuuZ6';
+CREATE ROLE freeswitch WITH SUPERUSER LOGIN PASSWORD 'fpasswdxH7CV71AuuZ6';
+GRANT ALL PRIVILEGES ON DATABASE fusionpbx to fusionpbx;
+GRANT ALL PRIVILEGES ON DATABASE freeswitch to fusionpbx;
+GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch;

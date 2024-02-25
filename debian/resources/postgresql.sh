@@ -71,10 +71,10 @@ fi
 #sed -i "s/zzz/$password/g" /etc/cron.daily/fusionpbx-maintenance
 
 #initialize the database
-pg_createcluster $database_version main
+#M pg_createcluster $database_version main
 
 #replace scram-sha-256 with md5
-sed -i /etc/postgresql/$database_version/main/pg_hba.conf -e '/^#/!s/scram-sha-256/md5/g'
+#M sed -i /etc/postgresql/$database_version/main/pg_hba.conf -e '/^#/!s/scram-sha-256/md5/g'
 
 #systemd
 if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then

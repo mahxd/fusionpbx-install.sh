@@ -17,18 +17,18 @@ fi
 export PGPASSWORD=$database_password
 
 #update the database password
-#sudo -u postgres psql --host=$database_host --port=$database_port --username=$database_username -c "ALTER USER fusionpbx WITH PASSWORD '$database_password';"
-#sudo -u postgres psql --host=$database_host --port=$database_port --username=$database_username -c "ALTER USER freeswitch WITH PASSWORD '$database_password';"
-sudo -u postgres psql -c "ALTER USER fusionpbx WITH PASSWORD '$database_password';"
-sudo -u postgres psql -c "ALTER USER freeswitch WITH PASSWORD '$database_password';"
+# sudo -u postgres psql --host=$database_host --port=$database_port --username=$database_username -c "ALTER USER fusionpbx WITH PASSWORD '$database_password';"
+# sudo -u postgres psql --host=$database_host --port=$database_port --username=$database_username -c "ALTER USER freeswitch WITH PASSWORD '$database_password';"
+# Msudo -u postgres psql -c "ALTER USER fusionpbx WITH PASSWORD '$database_password';"
+# Msudo -u postgres psql -c "ALTER USER freeswitch WITH PASSWORD '$database_password';"
 
 #install the database backup
 cp backup/fusionpbx-backup /etc/cron.daily
 cp backup/fusionpbx-maintenance /etc/cron.daily
 chmod 755 /etc/cron.daily/fusionpbx-backup
 chmod 755 /etc/cron.daily/fusionpbx-maintenance
-sed -i "s/zzz/$database_password/g" /etc/cron.daily/fusionpbx-backup
-sed -i "s/zzz/$database_password/g" /etc/cron.daily/fusionpbx-maintenance
+#Msed -i "s/zzz/$database_password/g" /etc/cron.daily/fusionpbx-backup
+#Msed -i "s/zzz/$database_password/g" /etc/cron.daily/fusionpbx-maintenance
 
 #add the config.conf
 mkdir -p /etc/fusionpbx
@@ -37,6 +37,14 @@ sed -i /etc/fusionpbx/config.conf -e s:"{database_host}:$database_host:"
 sed -i /etc/fusionpbx/config.conf -e s:"{database_name}:$database_name:"
 sed -i /etc/fusionpbx/config.conf -e s:"{database_username}:$database_username:"
 sed -i /etc/fusionpbx/config.conf -e s:"{database_password}:$database_password:"
+
+###########################
+rm -rf /etc/freeswitch/sip_profiles/*ipv6*
+cd /etc/freeswitch/languages
+rm -r `ls | grep -v 'ar\|en'`
+/usr/bin/supervisord -n &
+sleep 15
+###########################
 
 #add the database schema
 cd /var/www/fusionpbx && php /var/www/fusionpbx/core/upgrade/upgrade_schema.php > /dev/null 2>&1
@@ -95,23 +103,35 @@ sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{v_pass}:$xml_cdr
 cd /var/www/fusionpbx && /usr/bin/php /var/www/fusionpbx/core/upgrade/upgrade.php
 
 #restart freeswitch
-/bin/systemctl daemon-reload
-/bin/systemctl restart freeswitch
+#M/bin/systemctl daemon-reload
+#M/bin/systemctl restart freeswitch
 
 #install the email_queue service
-cp /var/www/fusionpbx/app/email_queue/resources/service/debian.service /etc/systemd/system/email_queue.service
-systemctl enable email_queue
-systemctl start email_queue
-systemctl daemon-reload
+#Mcp /var/www/fusionpbx/app/email_queue/resources/service/debian.service /etc/systemd/system/email_queue.service
+#Msystemctl enable email_queue
+#Msystemctl start email_queue
+#Msystemctl daemon-reload
 
 #install the event_guard service
-cp /var/www/fusionpbx/app/event_guard/resources/service/debian.service /etc/systemd/system/event_guard.service
-/bin/systemctl enable event_guard
-/bin/systemctl start event_guard
-/bin/systemctl daemon-reload
+#Mcp /var/www/fusionpbx/app/event_guard/resources/service/debian.service /etc/systemd/system/event_guard.service
+#M/bin/systemctl enable event_guard
+#M/bin/systemctl start event_guard
+#M/bin/systemctl daemon-reload
 
 #add xml cdr import to crontab
-(crontab -l; echo "* * * * * $(which php) /var/www/fusionpbx/app/xml_cdr/xml_cdr_import.php 300") | crontab
+#M(crontab -l; echo "* * * * * $(which php) /var/www/fusionpbx/app/xml_cdr/xml_cdr_import.php 300") | crontab
+
+# copy initiated files into mounted location to be used by main container
+rm -rf /etc/freeswitch/sip_profiles/*ipv6*
+rm -rf /var/lib/freeswitch/db/*ipv6*
+cd /etc/freeswitch/languages && rm -r `ls | grep -v 'ar\|en'`
+ 
+rsync -ago /etc/freeswitch/ /etc/freeswitch-init/
+rsync -ago /etc/fusionpbx/ /etc/fusionpbx-init/
+rsync -ago /var/lib/freeswitch/ /var/lib/freeswitch-init/
+rsync -ago /usr/share/freeswitch/ /usr/share/freeswitch-init/
+rsync -ago /var/www/fusionpbx/ /var/www/fusionpbx-init/
+rsync -ago /etc/php/8.1/ /etc/php/8.1-init/
 
 #welcome message
 echo ""

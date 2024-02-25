@@ -18,6 +18,8 @@ apt install -y devscripts libspeexdsp-dev libspeex-dev libldns-dev libedit-dev l
 apt install -y libshout3-dev libmpg123-dev libmp3lame-dev yasm nasm libsndfile1-dev libuv1-dev libvpx-dev
 apt install -y libavformat-dev libswscale-dev libvlc-dev python3-distutils sox libsox-fmt-all
 
+apt install memcached
+
 #install dependencies that depend on the operating system version
 if [ ."$os_codename" = ."stretch" ]; then
 	apt install -y libvpx4 swig3.0
@@ -31,6 +33,35 @@ fi
 
 # additional dependencies
 apt install -y sqlite3 unzip
+
+apt install -y python-is-python3 python3-dev python3-setuptools libxml2-utils python3-pip python3-distutils
+
+DEBIAN_FRONTEND=noninteractive apt-get -yq install \
+# build
+    build-essential cmake automake autoconf 'libtool-bin|libtool' pkg-config \
+# general
+    libssl-dev zlib1g-dev libdb-dev unixodbc-dev libncurses5-dev libexpat1-dev libgdbm-dev bison erlang-dev libtpl-dev libtiff5-dev uuid-dev \
+# core
+    libpcre3-dev libedit-dev libsqlite3-dev libcurl4-openssl-dev nasm \
+# core codecs
+    libogg-dev libspeex-dev libspeexdsp-dev \
+# mod_enum
+    libldns-dev \
+# mod_python3
+    python3-dev \
+# mod_av
+    libavformat-dev libswscale-dev libavresample-dev \
+# mod_lua
+    liblua5.2-dev \
+# mod_opus
+    libopus-dev \
+# mod_pgsql
+    libpq-dev \
+# mod_sndfile
+    libsndfile1-dev libflac-dev libogg-dev libvorbis-dev \
+# mod_shout
+    libshout3-dev libmpg123-dev libmp3lame-dev \
+
 
 #we are about to move out of the executing directory so we need to preserve it to return after we are done
 CWD=$(pwd)
@@ -73,6 +104,13 @@ if [ $(echo "$switch_version" | tr -d '.') -gt 1100 ]; then
 	./configure --enable-debug
 	make -j $(getconf _NPROCESSORS_ONLN)
 	make install
+
+	git clone https://github.com/signalwire/signalwire-c /usr/src/libs/signalwire-c
+	cd /usr/src/libs/signalwire-c && PKG_CONFIG_PATH=/usr/lib/pkgconfig cmake . -DCMAKE_INSTALL_PREFIX=/usr && make install
+
+	git clone https://github.com/freeswitch/libbroadvoice.git /usr/src/libs/libbroadvoice 
+	cd /usr/src/libs/libbroadvoice && ./autogen.sh && ./configure && make && make install
+
 	ldconfig
 fi
 
@@ -120,19 +158,35 @@ sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#applications/mod_
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#applications/mod_translate:applications/mod_translate:'
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#formats/mod_shout:formats/mod_shout:'
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#formats/mod_pgsql:formats/mod_pgsql:'
-sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#say/mod_say_es:say/mod_say_es:'
-sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#say/mod_say_fr:say/mod_say_fr:'
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#say/mod_say_es:say/mod_say_es:'
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#say/mod_say_fr:say/mod_say_fr:'
 
 #disable module or install dependency libks to compile signalwire
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'applications/mod_signalwire:#applications/mod_signalwire:'
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'endpoints/mod_skinny:#endpoints/mod_skinny:'
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'endpoints/mod_verto:#endpoints/mod_verto:'
 
+#enable custome mods 
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#languages/mod_python:languages/mod_python:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#languages/mod_python3:languages/mod_python3:'
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#languages/mod_perl:languages/mod_perl:'
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#event_handlers/mod_erlang_event:event_handlers/mod_erlang_event:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#codecs/mod_bv:codecs/mod_bv:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#asr_tts/mod_tts_commandline:asr_tts/mod_tts_commandline:'
+# sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#asr_tts/mod_flite:asr_tts/mod_flite:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#xml_int/mod_xml_curl:xml_int/mod_xml_curl:'
+
+
+
+
 # prepare the build
 #./configure --prefix=/usr/local/freeswitch --enable-core-pgsql-support --disable-fhs
+
+./debian/bootstrap.sh -j
+
 ./configure -C --enable-portable-binary --disable-dependency-tracking --enable-debug \
 --prefix=/usr --localstatedir=/var --sysconfdir=/etc \
---with-openssl --enable-core-pgsql-support
+--with-openssl --enable-core-pgsql-support --with-python=/usr/bin/python3
 
 # compile and install
 make -j $(getconf _NPROCESSORS_ONLN)

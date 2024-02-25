@@ -1,0 +1,9 @@
+postgresql/data
+postgresql/pgadmin_data
+data
+data/*
+docker-compose.yml
+.dockerignore
+# resources/finish.sh
+Dockerfile
+# supervisord.conf

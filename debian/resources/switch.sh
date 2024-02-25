@@ -26,7 +26,7 @@ if [ .$switch_source = .true ]; then
 
 	#systemd service
 	#switch/source-systemd.sh
-	switch/package-systemd.sh
+	#Mswitch/package-systemd.sh
 fi
 
 if [ .$switch_package = .true ]; then
@@ -51,5 +51,5 @@ if [ .$switch_package = .true ]; then
 	switch/package-permissions.sh
 
 	#systemd service
-	switch/package-systemd.sh
+	#Mswitch/package-systemd.sh
 fi

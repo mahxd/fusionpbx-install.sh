@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  postgresql:
+    image: postgres:16
+    restart: always
+    ports:
+      - 5432:5432
+    # network_mode: host
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passwdcuN2NCbG
+    volumes:
+      # - ./data/postgresql:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
+      - ./resources/postgresql/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: me.hoseini@ravanertebat.com
+      PGADMIN_DEFAULT_PASSWORD: M@_13245
+      PGADMIN_LISTEN_PORT: 8800
+    volumes:
+      # - ./data/pgadmin_data:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
+      - /etc/localtime:/etc/localtime
+    ports:
+      - 8800:8800
+    # network_mode: host
+
+  nettools:
+    image: jonlabelle/network-tools
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    # network_mode: host
+
+  fusionpbx:
+    build: 
+      context: .
+      dockerfile: ./docker/Dockerfile
+      network: host
+    image: fusionpbx:1
+    ports:
+      - 8805:443
+    # network_mode: host
+    # extra_hosts:
+    #   - "postgresql:127.0.0.1"
+    volumes:
+      - "./data/etc-freeswitch:/etc/freeswitch"
+      - "./data/etc-fusionpbx:/etc/fusionpbx"
+      - "./data/var-lib-freeswitch:/var/lib/freeswitch"
+      - "./data/usr-share-freeswitch:/usr/share/freeswitch"
+      - "./data/var-www-fusionpbx:/var/www/fusionpbx"
+      - "./data/etc-php-8.1:/etc/php/8.1"
+      - "./docker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
+      - /etc/localtime:/etc/localtime
+    # entrypoint:
+    #   - tail
+    #   - -f
+    #   - /dev/null
+
+  fusionpbx-init:
+    image: fusionpbx:1
+    profiles:
+      - init
+    # network_mode: host
+    # extra_hosts:
+    #   - "postgresql:127.0.0.1"
+    volumes:
+      - "./data/etc-freeswitch:/etc/freeswitch-init"
+      - "./data/etc-fusionpbx:/etc/fusionpbx-init"
+      - "./data/var-lib-freeswitch:/var/lib/freeswitch-init"
+      - "./data/usr-share-freeswitch:/usr/share/freeswitch-init"
+      - "./data/var-www-fusionpbx:/var/www/fusionpbx-init"
+      - "./data/etc-php-8.1:/etc/php/8.1-init"
+      - "./docker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
+      - "./resources/finish.sh:/usr/src/fusionpbx-install.sh/debian/resources/finish.sh"
+      - /etc/localtime:/etc/localtime
+    entrypoint:
+      - /usr/src/fusionpbx-install.sh/debian/resources/finish.sh
+    # entrypoint:
+    #   - tail
+    #   - -f
+    #   - /dev/null
+
+volumes:
+  pg-data:
+  pgadmin-data:
+
+networks:
+  default:
+    name: fusionpbx
