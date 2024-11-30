@@ -1,0 +1,23 @@
+# Add endpoints/mod_verto applications/mod_esl
+
+FROM fusionpbx:5.2.0-f1.10.11-v1.3
+RUN cd /usr/src/ \
+	&& git clone https://github.com/freeswitch/verto-client.git \
+	&& cd /usr/src/verto-client/verto_communicator # && apt-get -y install nodejs npm #18.19 \ 
+	&& sed -i 's|nodejs-legacy|nodejs|g' debian8-install.sh \
+	&& chmod +x debian8-install.sh \
+	&& ./debian8-install.sh \
+	&& cp -rf dist /var/www/fusionpbx/vc \
+	&& sed -i 's|"login": "1008"|"login": "freeswitch"|g;s|"password": "1234"|"password": "XMPhaumgBEVA"|g'  /var/www/html/vc/config.json
+	# && git clean -fdx
+
+
+RUN cd /usr/src/freeswitch-1.10.11 \
+	&& . /usr/src/fusionpbx-install.sh/debian/resources/config.sh \
+	&& sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#applications/mod_esl:applications/mod_esl:' \
+	&& sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#endpoints/mod_verto:endpoints/mod_verto:'  \
+	&& ./configure -C --enable-portable-binary --disable-dependency-tracking --enable-debug \
+	--prefix=/usr --localstatedir=/var --sysconfdir=/etc \
+	--with-openssl --enable-core-pgsql-support --with-python=/usr/bin/python3 \
+	&& make -j 4 \
+	&& make install

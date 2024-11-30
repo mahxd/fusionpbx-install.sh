@@ -43,7 +43,7 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile
       network: host
-    image: fusionpbx:1
+    image: fusionpbx:5.2.0-f1.10.11-v1.3
     # ports:
     #   - 8805:443
     network_mode: host
@@ -64,7 +64,7 @@ services:
     #   - /dev/null
 
   fusionpbx-init:
-    image: fusionpbx:1
+    image: fusionpbx:5.2.0-f1.10.11-v1.3
     profiles:
       - init
     network_mode: host

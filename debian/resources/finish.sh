@@ -40,7 +40,6 @@ sed -i /etc/fusionpbx/config.conf -e s:"{database_password}:$database_password:"
 
 ###########################
 rm -rf /etc/freeswitch/sip_profiles/*ipv6*
-cd /etc/freeswitch/languages
 rm -r `ls | grep -v 'ar\|en'`
 /usr/bin/supervisord -n &
 sleep 15
@@ -122,9 +121,6 @@ cd /var/www/fusionpbx && /usr/bin/php /var/www/fusionpbx/core/upgrade/upgrade.ph
 #M(crontab -l; echo "* * * * * $(which php) /var/www/fusionpbx/app/xml_cdr/xml_cdr_import.php 300") | crontab
 
 # copy initiated files into mounted location to be used by main container
-rm -rf /etc/freeswitch/sip_profiles/*ipv6*
-rm -rf /var/lib/freeswitch/db/*ipv6*
-cd /etc/freeswitch/languages && rm -r `ls | grep -v 'ar\|en'`
 
 echo 'error_log = /proc/self/fd/2' >> /etc/php/8.1/php.ini
 echo 'access.log = /proc/self/fd/2' >> /etc/php/8.1/php.ini

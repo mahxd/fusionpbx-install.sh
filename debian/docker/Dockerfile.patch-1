@@ -1,0 +1,10 @@
+FROM fusionpbx:1
+RUN cd /usr/src/freeswitch-1.10.11 \
+	&& . /usr/src/fusionpbx-install.sh/debian/resources/config.sh \
+	&& sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#event_handlers/mod_cdr_pg_csv:event_handlers/mod_cdr_pg_csv:' \
+	&& sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#event_handlers/mod_odbc_cdr:event_handlers/mod_odbc_cdr:'  \
+	&& ./configure -C --enable-portable-binary --disable-dependency-tracking --enable-debug \
+	--prefix=/usr --localstatedir=/var --sysconfdir=/etc \
+	--with-openssl --enable-core-pgsql-support --with-python=/usr/bin/python3 \
+	&& make -j 4 \
+	&& make install

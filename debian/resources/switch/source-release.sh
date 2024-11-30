@@ -175,8 +175,10 @@ sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#codecs/mod_bv:cod
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#asr_tts/mod_tts_commandline:asr_tts/mod_tts_commandline:'
 # sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#asr_tts/mod_flite:asr_tts/mod_flite:'
 sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#xml_int/mod_xml_curl:xml_int/mod_xml_curl:'
-
-
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#event_handlers/mod_cdr_pg_csv:event_handlers/mod_cdr_pg_csv:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#event_handlers/mod_odbc_cdr:event_handlers/mod_odbc_cdr:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#applications/mod_esl:applications/mod_esl:'
+sed -i /usr/src/freeswitch-$switch_version/modules.conf -e s:'#endpoints/mod_verto:endpoints/mod_verto:' 
 
 
 # prepare the build
