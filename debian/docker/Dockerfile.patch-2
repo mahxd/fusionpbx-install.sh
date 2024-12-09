@@ -3,13 +3,14 @@
 FROM fusionpbx:5.2.0-f1.10.11-v1.3
 RUN cd /usr/src/ \
 	&& git clone https://github.com/freeswitch/verto-client.git \
-	&& cd /usr/src/verto-client/verto_communicator # && apt-get -y install nodejs npm #18.19 \ 
+	&& cd /usr/src/verto-client/verto_communicator \
 	&& sed -i 's|nodejs-legacy|nodejs|g' debian8-install.sh \
 	&& chmod +x debian8-install.sh \
 	&& ./debian8-install.sh \
 	&& cp -rf dist /var/www/fusionpbx/vc \
-	&& sed -i 's|"login": "1008"|"login": "freeswitch"|g;s|"password": "1234"|"password": "XMPhaumgBEVA"|g'  /var/www/html/vc/config.json
+	&& sed -i 's|"login": "1008"|"login": "freeswitch"|g;s|"password": "1234"|"password": "XMPhaumgBEVA"|g'  /var/www/fusionpbx/vc/config.json
 	# && git clean -fdx
+	# apt-get -y install nodejs npm #18.19 
 
 
 RUN cd /usr/src/freeswitch-1.10.11 \
